@@ -1,0 +1,168 @@
+@startuml Diagrama_Clases_InvManager
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam classBackgroundColor #FEFEFE
+skinparam classBorderColor #555555
+skinparam packageBackgroundColor #F5F5F5
+skinparam packageBorderColor #888888
+skinparam linetype ortho
+hide empty members
+
+package "model" <<Rectangle>> {
+  class Producto {
+    - id : int
+    - nombre : String
+    - descripcion : String
+    - precio : double
+    - stockActual : int
+    - stockMinimo : int
+    - categoriaId : int
+    - proveedorId : int
+    - categoriaNombre : String
+    - proveedorNombre : String
+    + getters()
+    + setters()
+    + toString() : String
+  }
+
+  class Categoria {
+    - id : int
+    - nombre : String
+    - descripcion : String
+    + getters()
+    + setters()
+    + toString() : String
+  }
+
+  class Proveedor {
+    - id : int
+    - nombre : String
+    - contacto : String
+    - telefono : String
+    - email : String
+    + getters()
+    + setters()
+    + toString() : String
+  }
+}
+
+package "dao" <<Rectangle>> {
+  class DatabaseConnection {
+    + {static} getConnection() : Connection
+    + {static} crearTablas() : void
+    + {static} insertarDatosPrueba() : void
+  }
+
+  class ProductoDAO {
+    + insertar(Producto) : void
+    + obtenerTodos() : List<Producto>
+    + obtenerPorId(int) : Producto
+    + actualizar(Producto) : void
+    + eliminar(int) : void
+    + buscarPorNombre(String) : List<Producto>
+    + filtrar(filtros) : List<Producto>
+    + obtenerStockBajo() : List<Producto>
+  }
+
+  class CategoriaDAO {
+    + insertar(Categoria) : void
+    + obtenerTodas() : List<Categoria>
+    + actualizar(Categoria) : void
+    + eliminar(int) : void
+    + eliminarConTransaccion(int) : void
+  }
+
+  class ProveedorDAO {
+    + insertar(Proveedor) : void
+    + obtenerTodos() : List<Proveedor>
+    + actualizar(Proveedor) : void
+    + eliminar(int) : void
+    + eliminarConTransaccion(int) : void
+  }
+}
+
+package "service" <<Rectangle>> {
+  class ProductoService {
+    - productoDAO : ProductoDAO
+    + crearProducto(Producto) : void
+    + editarProducto(Producto) : void
+    - validar(Producto) : void
+  }
+}
+
+package "util" <<Rectangle>> {
+  class AppConfig {
+    + {static} getStockMinimoDefecto() : int
+    + {static} getSeparadorCSV() : String
+    + {static} getRutaBD() : String
+  }
+
+  class CSVExporter {
+    + {static} exportar(List<Producto>, File) : void
+  }
+}
+
+package "ui" <<Rectangle>> {
+  class Main {
+    + {static} main(String[]) : void
+  }
+
+  class VentanaPrincipal {
+    - tabla : JTable
+    - modelo : ProductoTableModel
+    + cargarProductos() : void
+    + refrescar() : void
+  }
+
+  class ProductoTableModel {
+    - productos : List<Producto>
+    + setProductos(List) : void
+    + getProductoAt(int) : Producto
+  }
+
+  class FormularioProducto {
+    - producto : Producto
+    - comboCategorias : JComboBox
+    - comboProveedores : JComboBox
+    + guardar() : void
+  }
+
+  class VentanaCategorias {
+    + cargarCategorias() : void
+  }
+
+  class VentanaProveedores {
+    + cargarProveedores() : void
+  }
+}
+
+ProductoDAO ..> DatabaseConnection : usa
+CategoriaDAO ..> DatabaseConnection : usa
+ProveedorDAO ..> DatabaseConnection : usa
+
+ProductoDAO ..> Producto : gestiona
+CategoriaDAO ..> Categoria : gestiona
+ProveedorDAO ..> Proveedor : gestiona
+
+ProductoService ..> ProductoDAO : delega
+ProductoService ..> Producto : valida
+
+VentanaPrincipal ..> ProductoDAO
+VentanaPrincipal ..> ProductoTableModel
+VentanaPrincipal ..> FormularioProducto : abre
+VentanaPrincipal ..> CSVExporter : exporta
+
+FormularioProducto ..> ProductoService : usa
+FormularioProducto ..> CategoriaDAO : lee
+FormularioProducto ..> ProveedorDAO : lee
+
+VentanaCategorias ..> CategoriaDAO
+VentanaProveedores ..> ProveedorDAO
+
+CSVExporter ..> AppConfig : lee config
+DatabaseConnection ..> AppConfig : lee ruta BD
+FormularioProducto ..> AppConfig : lee umbral
+
+Main ..> VentanaPrincipal : arranca
+
+@enduml
