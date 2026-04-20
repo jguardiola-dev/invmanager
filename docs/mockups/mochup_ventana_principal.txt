@@ -1,19 +1,19 @@
 @startsalt
 {
   {* Archivo | Gestión | Ayuda }
-  {
-    Buscar: | "          " | Categoría: | ^Todas^ | Proveedor: | ^Todos^ | [Filtrar] | [Limpiar]
-  }
+  Buscar: | "nombre..." | Categoría: | ^Todas^ | Proveedor: | ^Todos^
+  .
+  Stock mín: | "0" | Stock máx: | "999" | [Filtrar] | [Limpiar]
+  .
   {#
-    . | Nombre | Categoría | Proveedor | Precio | Stock actual | Stock mínimo
-    . | Teclado inalámbrico | Electrónica | Distribuciones García | 29.95 | 15 | 5
-    . | Ratón óptico USB | Electrónica | Distribuciones García | 9.50 | 3 | 10
-    . | Cuaderno A4 rayado | Papelería | Importaciones Med. | 4.25 | 50 | 20
-    . | Bolígrafo azul | Papelería | Importaciones Med. | 8 | 15 | 8
-    . | Café molido 250g | Alimentación | Importaciones Med. | 5.75 | 25 | 10
+    . | Nombre | Categoría | Proveedor | Precio | Stock | Stock mín
+    . | Teclado inalámbrico | Electrónica | Distribuciones García | 29,95 | 15 | 5
+    . | Ratón óptico USB | Electrónica | Distribuciones García | 9,50 | 3 | 10
+    . | Cuaderno A4 rayado | Papelería | Importaciones Med. | 4,25 | 50 | 20
+    . | Bolígrafo azul | Papelería | Importaciones Med. | 0,80 | 15 | 8
+    . | Café molido 250g | Alimentación | Importaciones Med. | 5,75 | 25 | 10
   }
-  {
-    [Nuevo] | [Editar] | [Eliminar] | [Exportar CSV]
-  }
+  .
+  [ Nuevo ] | [ Editar ] | [ Eliminar ] | [ Exportar CSV ]
 }
 @endsalt

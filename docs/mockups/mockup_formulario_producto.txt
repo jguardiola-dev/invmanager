@@ -1,0 +1,15 @@
+@startsalt
+{
+  Nuevo producto
+  ==
+  Nombre:        | "                                   "
+  Descripción:   | "                                   "
+  Precio (€):   | "            "
+  Stock actual:  | "     0     "
+  Stock mínimo:  | "     0     "
+  Categoría:     | ^Electrónica^
+  Proveedor:     | ^Distribuciones García^
+  ==
+  { [ Guardar ] | [ Cancelar ] }
+}
+@endsalt

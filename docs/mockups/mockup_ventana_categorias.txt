@@ -1,0 +1,14 @@
+@startsalt
+{
+  Gestión de categorías
+  ==
+  {#
+    ID | Nombre | Descripción
+    1 | Electrónica | Dispositivos electrónicos
+    2 | Papelería | Material de oficina
+    3 | Alimentación | Productos alimentarios
+  }
+  ==
+  { [ Nueva ] | [ Editar ] | [ Eliminar ] | [ Cerrar ] }
+}
+@endsalt
