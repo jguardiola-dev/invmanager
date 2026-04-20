@@ -1,7 +1,6 @@
 @startuml Arquitectura_InvManager
 skinparam backgroundColor white
 skinparam shadowing false
-skinparam componentStyle rectangle
 skinparam rectangle {
   BackgroundColor #F5F5F5
   BorderColor #555555
@@ -14,37 +13,16 @@ skinparam arrow {
 
 title Arquitectura en capas — InvManager
 
-rectangle "**Capa de Presentación (UI)**\n\nPaquete: ui\n\n• Main\n• VentanaPrincipal\n• FormularioProducto\n• VentanaCategorias\n• VentanaProveedores\n• ProductoTableModel\n\nTecnología: Java Swing" as UI #E3F2FD
+rectangle "**Capa de Presentación**\n\nPaquete: ui\n\nVentanas Swing:\nMain, VentanaPrincipal,\nFormularioProducto,\nVentanaCategorias,\nVentanaProveedores,\nProductoTableModel" as UI #E3F2FD
 
-rectangle "**Capa de Lógica de Negocio**\n\nPaquetes: service + util\n\n• ProductoService (validaciones)\n• AppConfig (configuración)\n• CSVExporter (exportación)\n\nTecnología: Java SE 21" as LOGICA #FFF9C4
+rectangle "**Capa de Lógica**\n\nPaquetes: service + util\n\nProductoService\nAppConfig\nCSVExporter" as LOGICA #FFF9C4
 
-rectangle "**Capa de Acceso a Datos**\n\nPaquete: dao + model\n\n• DatabaseConnection\n• ProductoDAO / CategoriaDAO / ProveedorDAO\n• Producto / Categoria / Proveedor\n\nTecnología: JDBC + SQLite" as DATOS #C8E6C9
+rectangle "**Capa de Datos**\n\nPaquete: dao + model\n\nDatabaseConnection\nProductoDAO\nCategoriaDAO\nProveedorDAO\nProducto, Categoria, Proveedor" as DATOS #C8E6C9
 
 database "inventario.db\n(SQLite)" as DB #A5D6A7
 
-UI --> LOGICA : invoca validaciones\ny operaciones
-LOGICA --> DATOS : delega persistencia
-DATOS --> DB : SQL vía JDBC\n(PreparedStatement)
-
-note right of UI
-  Capa responsable de la
-  interacción con el usuario.
-  No contiene lógica de negocio
-  ni accede directamente a la BD.
-end note
-
-note right of LOGICA
-  Centraliza validaciones de reglas
-  de negocio y servicios auxiliares.
-  Los formularios delegan aquí
-  antes de persistir.
-end note
-
-note right of DATOS
-  Encapsula el acceso a BD mediante
-  el patrón DAO. Usa PreparedStatement,
-  try-with-resources y transacciones
-  JDBC cuando aplica.
-end note
+UI --> LOGICA
+LOGICA --> DATOS
+DATOS --> DB
 
 @enduml
