@@ -13,6 +13,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,7 +47,6 @@ public class VentanaPrincipal extends JFrame {
     private final JComboBox<Categoria> cmbCategoria = new JComboBox<>();
     private final JComboBox<Proveedor> cmbProveedor = new JComboBox<>();
 
-    // Centinelas para el "Todas" / "Todos" en los combos de filtro
     private static final Categoria CATEGORIA_TODAS = new Categoria(0, "Todas", "");
     private static final Proveedor PROVEEDOR_TODOS = new Proveedor(0, "Todos", "", "", "");
 
@@ -57,7 +59,13 @@ public class VentanaPrincipal extends JFrame {
         tableModel = new ProductoTableModel();
         tabla = new JTable(tableModel);
 
+        StockBajoRenderer renderer = new StockBajoRenderer(tableModel);
+        for (int i = 0; i < tabla.getColumnCount(); i++) {
+            tabla.getColumnModel().getColumn(i).setCellRenderer(renderer);
+        }
+
         configurarVentana();
+        configurarMenu();
         configurarBotones();
         cargarCombos();
         cargarProductos();
@@ -68,14 +76,12 @@ public class VentanaPrincipal extends JFrame {
         setSize(950, 500);
         setLocationRelativeTo(null);
 
-        // Panel con botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelBotones.add(btnNuevo);
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnExportar);
 
-        // Panel con busqueda y filtros
         JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelFiltros.add(new JLabel("Buscar:"));
         panelFiltros.add(txtBuscar);
@@ -84,7 +90,6 @@ public class VentanaPrincipal extends JFrame {
         panelFiltros.add(new JLabel("Proveedor:"));
         panelFiltros.add(cmbProveedor);
 
-        // Panel superior agrupado en vertical
         JPanel panelSuperior = new JPanel();
         panelSuperior.setLayout(new BoxLayout(panelSuperior, BoxLayout.Y_AXIS));
         panelSuperior.add(panelBotones);
@@ -96,13 +101,40 @@ public class VentanaPrincipal extends JFrame {
         add(scroll, BorderLayout.CENTER);
     }
 
+    private void configurarMenu() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu menuArchivo = new JMenu("Archivo");
+        JMenuItem itemSalir = new JMenuItem("Salir");
+        itemSalir.addActionListener(e -> System.exit(0));
+        menuArchivo.add(itemSalir);
+
+        JMenu menuGestion = new JMenu("Gestion");
+        JMenuItem itemCategorias = new JMenuItem("Categorias...");
+        JMenuItem itemProveedores = new JMenuItem("Proveedores...");
+        itemCategorias.addActionListener(e -> abrirCategorias());
+        itemProveedores.addActionListener(e -> abrirProveedores());
+        menuGestion.add(itemCategorias);
+        menuGestion.add(itemProveedores);
+
+        JMenu menuAyuda = new JMenu("Ayuda");
+        JMenuItem itemAcerca = new JMenuItem("Acerca de");
+        itemAcerca.addActionListener(e -> mostrarAcercaDe());
+        menuAyuda.add(itemAcerca);
+
+        menuBar.add(menuArchivo);
+        menuBar.add(menuGestion);
+        menuBar.add(menuAyuda);
+
+        setJMenuBar(menuBar);
+    }
+
     private void configurarBotones() {
         btnNuevo.addActionListener(e -> accionNuevo());
         btnEditar.addActionListener(e -> accionEditar());
         btnEliminar.addActionListener(e -> accionEliminar());
         btnExportar.addActionListener(e -> accionExportar());
 
-        // Cualquier cambio en busqueda o filtros refresca la tabla
         txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) { aplicarFiltros(); }
@@ -118,12 +150,13 @@ public class VentanaPrincipal extends JFrame {
 
     private void cargarCombos() {
         try {
-            // Primer item: "Todas/Todos" como sentinela
+            cmbCategoria.removeAllItems();
             cmbCategoria.addItem(CATEGORIA_TODAS);
             for (Categoria c : categoriaDAO.obtenerTodas()) {
                 cmbCategoria.addItem(c);
             }
 
+            cmbProveedor.removeAllItems();
             cmbProveedor.addItem(PROVEEDOR_TODOS);
             for (Proveedor pr : proveedorDAO.obtenerTodos()) {
                 cmbProveedor.addItem(pr);
@@ -132,6 +165,30 @@ public class VentanaPrincipal extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar filtros: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void abrirCategorias() {
+        VentanaCategorias v = new VentanaCategorias(this);
+        v.setVisible(true);
+        // Al cerrar, recargamos combos y tabla por si hubo cambios
+        cargarCombos();
+        aplicarFiltros();
+    }
+
+    private void abrirProveedores() {
+        VentanaProveedores v = new VentanaProveedores(this);
+        v.setVisible(true);
+        cargarCombos();
+        aplicarFiltros();
+    }
+
+    private void mostrarAcercaDe() {
+        JOptionPane.showMessageDialog(this,
+                "InvManager v1.0\n"
+                        + "Gestion de inventario para pequenas y medianas empresas\n\n"
+                        + "Jorge Guardiola Tomas\n"
+                        + "TFG DAM - ILERNA Online 2026",
+                "Acerca de InvManager", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void accionNuevo() {
@@ -212,16 +269,13 @@ public class VentanaPrincipal extends JFrame {
             Categoria categoriaFiltro = (Categoria) cmbCategoria.getSelectedItem();
             Proveedor proveedorFiltro = (Proveedor) cmbProveedor.getSelectedItem();
 
-            // Si id=0 es el centinela "Todas/Todos", el filtro no aplica
             Integer categoriaId = (categoriaFiltro != null && categoriaFiltro.getId() != 0) ? categoriaFiltro.getId() : null;
             Integer proveedorId = (proveedorFiltro != null && proveedorFiltro.getId() != 0) ? proveedorFiltro.getId() : null;
 
             List<model.Producto> resultado;
 
-            // Si el usuario esta buscando por nombre, usamos buscarPorNombre
             if (!textoBusqueda.isEmpty()) {
                 resultado = productoDAO.buscarPorNombre(textoBusqueda);
-                // Y filtramos manualmente los combos sobre el resultado
                 if (categoriaId != null) {
                     resultado.removeIf(p -> p.getCategoriaId() != categoriaId);
                 }
@@ -229,7 +283,6 @@ public class VentanaPrincipal extends JFrame {
                     resultado.removeIf(p -> p.getProveedorId() != proveedorId);
                 }
             } else {
-                // Si no hay busqueda, usamos filtrar directamente en BD
                 resultado = productoDAO.filtrar(categoriaId, proveedorId, null, null);
             }
 
