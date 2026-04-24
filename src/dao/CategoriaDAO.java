@@ -120,4 +120,18 @@ public class CategoriaDAO {
             }
         }
     }
+
+    public boolean existePorNombre(String nombre) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM categoria WHERE nombre = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) > 0;
+            }
+        }
+    }
 }

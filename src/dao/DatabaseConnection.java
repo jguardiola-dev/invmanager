@@ -56,11 +56,21 @@ public class DatabaseConnection {
                 + "FOREIGN KEY (categoria_id) REFERENCES categoria(id) ON DELETE RESTRICT,"
                 + "FOREIGN KEY (proveedor_id) REFERENCES proveedor(id) ON DELETE RESTRICT)";
 
+        String sqlMovimiento = "CREATE TABLE IF NOT EXISTS movimiento_stock ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "producto_id INTEGER NOT NULL,"
+                + "tipo TEXT NOT NULL CHECK (tipo IN ('ENTRADA', 'SALIDA')),"
+                + "cantidad INTEGER NOT NULL CHECK (cantidad > 0),"
+                + "fecha TEXT NOT NULL,"
+                + "motivo TEXT,"
+                + "FOREIGN KEY (producto_id) REFERENCES producto(id) ON DELETE CASCADE)";
+
         try (Connection conn = getConnection();
              Statement st = conn.createStatement()) {
             st.execute(sqlCategoria);
             st.execute(sqlProveedor);
             st.execute(sqlProducto);
+            st.execute(sqlMovimiento);
         } catch (SQLException e) {
             System.out.println("Error creando tablas: " + e.getMessage());
         }

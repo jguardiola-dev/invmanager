@@ -74,12 +74,21 @@ public class VentanaCategorias extends JDialog {
         if (nombre == null || nombre.trim().isEmpty()) {
             return;
         }
-        String descripcion = JOptionPane.showInputDialog(this, "Descripcion:");
-        if (descripcion == null) {
-            descripcion = "";
-        }
 
         try {
+            // Comprobar antes de preguntar mas cosas si el nombre ya existe
+            if (categoriaDAO.existePorNombre(nombre.trim())) {
+                JOptionPane.showMessageDialog(this,
+                        "Ya existe una categoria con ese nombre",
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String descripcion = JOptionPane.showInputDialog(this, "Descripcion:");
+            if (descripcion == null) {
+                descripcion = "";
+            }
+
             Categoria c = new Categoria(0, nombre.trim(), descripcion.trim());
             categoriaDAO.insertar(c);
             cargarCategorias();
@@ -102,13 +111,23 @@ public class VentanaCategorias extends JDialog {
         if (nombre == null || nombre.trim().isEmpty()) {
             return;
         }
-        String descripcion = (String) JOptionPane.showInputDialog(this, "Descripcion:",
-                "Editar categoria", JOptionPane.PLAIN_MESSAGE, null, null, seleccionada.getDescripcion());
-        if (descripcion == null) {
-            return;
-        }
 
         try {
+            // Si el nombre cambia, comprobar que no choque con otro
+            if (!nombre.trim().equals(seleccionada.getNombre())
+                    && categoriaDAO.existePorNombre(nombre.trim())) {
+                JOptionPane.showMessageDialog(this,
+                        "Ya existe otra categoria con ese nombre",
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String descripcion = (String) JOptionPane.showInputDialog(this, "Descripcion:",
+                    "Editar categoria", JOptionPane.PLAIN_MESSAGE, null, null, seleccionada.getDescripcion());
+            if (descripcion == null) {
+                return;
+            }
+
             seleccionada.setNombre(nombre.trim());
             seleccionada.setDescripcion(descripcion.trim());
             categoriaDAO.actualizar(seleccionada);

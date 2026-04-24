@@ -42,6 +42,7 @@ public class VentanaPrincipal extends JFrame {
     private final JButton btnNuevo = new JButton("Nuevo");
     private final JButton btnEditar = new JButton("Editar");
     private final JButton btnEliminar = new JButton("Eliminar");
+    private final JButton btnHistorial = new JButton("Historial");
     private final JButton btnExportar = new JButton("Exportar CSV");
     private final JTextField txtBuscar = new JTextField(20);
     private final JComboBox<Categoria> cmbCategoria = new JComboBox<>();
@@ -73,13 +74,14 @@ public class VentanaPrincipal extends JFrame {
 
     private void configurarVentana() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(950, 500);
+        setSize(1000, 500);
         setLocationRelativeTo(null);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelBotones.add(btnNuevo);
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
+        panelBotones.add(btnHistorial);
         panelBotones.add(btnExportar);
 
         JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -133,6 +135,7 @@ public class VentanaPrincipal extends JFrame {
         btnNuevo.addActionListener(e -> accionNuevo());
         btnEditar.addActionListener(e -> accionEditar());
         btnEliminar.addActionListener(e -> accionEliminar());
+        btnHistorial.addActionListener(e -> accionHistorial());
         btnExportar.addActionListener(e -> accionExportar());
 
         txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
@@ -170,7 +173,6 @@ public class VentanaPrincipal extends JFrame {
     private void abrirCategorias() {
         VentanaCategorias v = new VentanaCategorias(this);
         v.setVisible(true);
-        // Al cerrar, recargamos combos y tabla por si hubo cambios
         cargarCombos();
         aplicarFiltros();
     }
@@ -234,6 +236,21 @@ public class VentanaPrincipal extends JFrame {
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private void accionHistorial() {
+        int fila = tabla.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un producto primero",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        VentanaMovimientos v = new VentanaMovimientos(this, tableModel.getProductoEnFila(fila));
+        v.setVisible(true);
+
+        // Al cerrar, recargamos la tabla porque el stock puede haber cambiado
+        aplicarFiltros();
     }
 
     private void accionExportar() {
