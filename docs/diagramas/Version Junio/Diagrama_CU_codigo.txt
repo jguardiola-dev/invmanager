@@ -1,0 +1,28 @@
+@startuml Diagrama_Casos_Uso_InvManager
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor "Usuario\n(gestor de inventario)" as Usuario
+
+rectangle "Sistema InvManager" {
+  usecase "CU01\nGestionar\nProductos" as CU01
+  usecase "CU02\nGestionar\nCategorías" as CU02
+  usecase "CU03\nGestionar\nProveedores" as CU03
+  usecase "CU04\nBuscar y\nFiltrar Productos" as CU04
+  usecase "CU05\nVer Alertas\nde Stock Bajo" as CU05
+  usecase "CU06\nExportar\nInventario a CSV" as CU06
+  usecase "CU07\nRegistrar\nMovimiento de Stock" as CU07
+}
+
+Usuario --> CU01
+Usuario --> CU02
+Usuario --> CU03
+Usuario --> CU04
+Usuario --> CU05
+Usuario --> CU06
+Usuario --> CU07
+
+@enduml

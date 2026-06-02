@@ -1,0 +1,52 @@
+@startchen Diagrama_ER_InvManager
+
+entity Producto {
+  id key
+  nombre
+  descripcion
+  precio
+  stock_actual
+  stock_minimo
+}
+
+entity Categoria {
+  id key
+  nombre
+  descripcion
+}
+
+entity Proveedor {
+  id key
+  nombre
+  contacto
+  telefono
+  email
+}
+
+entity MovimientoStock {
+  id key
+  tipo
+  cantidad
+  fecha
+  motivo
+}
+
+relationship Pertenece_a {
+}
+
+relationship Suministrado_por {
+}
+
+relationship Registra {
+}
+
+Producto -(1,1)- Pertenece_a
+Pertenece_a -(0,N)- Categoria
+
+Producto -(1,1)- Suministrado_por
+Suministrado_por -(0,N)- Proveedor
+
+Producto -(1,1)- Registra
+Registra -(0,N)- MovimientoStock
+
+@endchen
