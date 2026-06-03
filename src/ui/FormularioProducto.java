@@ -6,7 +6,7 @@ import model.Categoria;
 import model.Producto;
 import model.Proveedor;
 import service.ProductoService;
-
+import util.AppConfig;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -40,8 +40,7 @@ public class FormularioProducto extends JDialog {
     private final JTextField txtDescripcion = new JTextField();
     private final JTextField txtPrecio = new JTextField();
     private final JSpinner spnStockActual = new JSpinner(new SpinnerNumberModel(0, 0, 99999, 1));
-    private final JSpinner spnStockMinimo = new JSpinner(new SpinnerNumberModel(5, 0, 99999, 1));
-    private final JComboBox<Categoria> cmbCategoria = new JComboBox<>();
+    private final JSpinner spnStockMinimo = new JSpinner(new SpinnerNumberModel(AppConfig.getStockMinimoDefecto(), 0, 99999, 1));    private final JComboBox<Categoria> cmbCategoria = new JComboBox<>();
     private final JComboBox<Proveedor> cmbProveedor = new JComboBox<>();
 
     public FormularioProducto(Frame parent, Producto producto) {
