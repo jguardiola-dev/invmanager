@@ -36,7 +36,7 @@ El código está separado en tres capas, y cada una solo habla con la de debajo:
 Algunas decisiones:
 
 - **Las reglas de negocio están fuera de la interfaz.** Por ejemplo, que el precio sea mayor que cero o que el stock no sea negativo se valida en `ProductoService`, no en el formulario.
-- **Consultas preparadas** (`PreparedStatement`) en todo el acceso a datos, para evitar inyección de SQL.
+- **Consultas preparadas** (`PreparedStatement`) en todas las consultas que reciben datos del usuario, para evitar inyección de SQL.
 - **Borrado en una transacción**, para que no queden datos a medias si algo falla.
 - **La base de datos se crea sola** al arrancar, con unos datos de ejemplo.
 
